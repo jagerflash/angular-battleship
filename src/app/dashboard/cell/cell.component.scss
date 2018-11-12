@@ -1,0 +1,35 @@
+:host {
+  box-sizing: border-box;
+  display: inline-block;
+  border-radius: 5px;
+  width: 10%;
+  cursor: pointer;
+}
+
+.cell {
+  &:before {
+    content: '';
+    display: block;
+    padding-top: 100%;
+  }
+
+  &.damage {
+    background-color: red;
+  }
+
+  &.show {
+    background-color: yellow;
+  }
+
+  &.hide {
+    background-color: darkgrey;
+  }
+
+  &.hide:hover {
+    background-color: grey;
+  }
+
+  &.missed {
+    background-color: antiquewhite;
+  }
+}

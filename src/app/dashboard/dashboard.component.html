@@ -1,0 +1,13 @@
+<div class="dashboard">
+  <dashboard-cell
+    *ngFor="let cell of cells"
+    [type]="cell.type"
+    (click)="onCellClick(cell)"
+  ></dashboard-cell>
+</div>
+<h1 class="congratulations" *ngIf="shipsLeft === 0">You win</h1>
+<div *ngIf="shipsLeft > 0">
+  Ships left: {{shipsLeft}}
+</div>
+
+<button (click)="resetShips()">reset</button>
