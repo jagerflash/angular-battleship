@@ -42,19 +42,14 @@ export class Cell {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CellComponent implements OnInit {
-  @HostBinding('class.damaged') get isDamaged() {
-    return this.type === 'damaged';
+  @HostBinding('class') private cellClass;
+
+  @Input() set type(value: CellState) {
+    this.cellClass = value;
+    this._type = value;
   }
 
-  @HostBinding('class.missed') get isMissed() {
-    return this.type === 'missed';
-  }
-
-  @HostBinding('class.hide') get isHide() {
-    return this.type === 'hide';
-  }
-
-  @Input() type: CellState;
+  private _type: CellState;
 
   constructor() { }
 

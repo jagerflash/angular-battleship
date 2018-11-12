@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ShipService, ShipType, IShip, Position } from './ship.service';
-import { Cell } from './cell/cell.component';
+import { Cell } from '../cell/cell.component';
 
 @Injectable({
   providedIn: 'root'
