@@ -1,13 +1,19 @@
-<div class="dashboard">
-  <dashboard-cell
-    *ngFor="let cell of cells"
-    [type]="cell.type"
-    (click)="onCellClick(cell)"
-  ></dashboard-cell>
-</div>
-<h1 class="congratulations" *ngIf="shipsLeft === 0">You win</h1>
-<div *ngIf="shipsLeft > 0">
-  Ships left: {{shipsLeft}}
-</div>
+<div class="container">
+  <h1>Batleship</h1>
+  <div class="dashboard">
+    <dashboard-cell
+      *ngFor="let cell of cells"
+      [type]="cell.type"
+      (click)="onCellClick(cell)"
+    ></dashboard-cell>
+  </div>
+  <section class="controls" *ngIf="shipsLeft === 0">
+    <h2 class="congratulations">You win</h2>
+    <button class="btn" (click)="resetShips()">New Game</button>
+  </section>
 
-<button (click)="resetShips()">reset</button>
+  <div *ngIf="shipsLeft > 0">
+    Ships left: {{shipsLeft}}
+  </div>
+
+</div>

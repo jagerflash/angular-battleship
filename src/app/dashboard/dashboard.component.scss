@@ -1,6 +1,17 @@
-.dashboard {
+.container {
+  margin: 0 auto;
   width: 500px;
-  border: 1px solid black;
-  position: relative;
-  font-size: 0;
+
+  .dashboard {
+    width: 100%;
+    border: 1px solid black;
+    position: relative;
+    font-size: 0;
+  }
+
+  .controls {
+    margin: 5px 0;
+    display: flex;
+    justify-content: space-between;
+  }
 }

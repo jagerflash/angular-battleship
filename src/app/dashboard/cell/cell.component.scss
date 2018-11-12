@@ -7,13 +7,15 @@
 }
 
 .cell {
+  position: relative;
+
   &:before {
     content: '';
     display: block;
     padding-top: 100%;
   }
 
-  &.damage {
+  &.destroyed {
     background-color: red;
   }
 
@@ -23,13 +25,52 @@
 
   &.hide {
     background-color: darkgrey;
-  }
 
-  &.hide:hover {
-    background-color: grey;
+    &:hover {
+      background-color: grey;
+    }
   }
 
   &.missed {
-    background-color: antiquewhite;
+    background-color: darkgrey;
+
+    &:after {
+      content: '';
+      background-color: black;
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      top: 50%;
+      margin-left: -5px;
+      margin-top: -5px;
+      left: 50%;
+    }
+
+    &:hover {
+      background-color: grey;
+    }
+  }
+
+  &.damage{
+    background-color: red;
+
+    &:after {
+      content: '×';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      font-size: 2.6rem;
+      text-align: center;
+      border-radius: 50%;
+      margin-top: -1.4rem;
+    }
+  }
+
+  .circle {
+    background-color: black;
+    border-radius: 50%;
+
   }
 }

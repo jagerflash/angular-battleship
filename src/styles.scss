@@ -1,4 +1,14 @@
-/* You can add global styles to this file, and also import other style files */
 body {
   margin: 0;
+  font-family: 'Courier New', Courier, monospace;
+
+  .btn {
+    cursor: pointer;
+    border: none;
+    outline: none;
+    background-color: darkslategray;
+    padding: 7px 10px;
+    border-radius: 5px;
+    color: white;
+  }
 }

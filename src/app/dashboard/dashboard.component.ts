@@ -21,13 +21,15 @@ export class DashboardComponent implements OnInit {
   }
 
   onCellClick(cell: Cell) {
-    console.log(cell);
-    this.dashboardService.shoot(cell);
-    this.cells = this.dashboardService.cellItems;
-    this.shipsLeft = this.dashboardService.aliveShipsLength;
+    if (this.shipsLeft > 0) {
+      this.dashboardService.shoot(cell);
+      this.cells = this.dashboardService.cellItems;
+      this.shipsLeft = this.dashboardService.aliveShipsLength;
+    }
   }
 
   resetShips() {
     this.dashboardService.resetShips();
+    this.shipsLeft = this.dashboardService.aliveShipsLength;
   }
 }
