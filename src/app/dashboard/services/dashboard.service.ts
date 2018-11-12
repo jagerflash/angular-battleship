@@ -88,7 +88,7 @@ export class DashboardService {
           y: coords.y + Math.floor(i / 3) - 1
         };
         const point = this.toLineArray(p);
-        if (this.cells[point] && !this.cells[point].ship && p.x < 10 && p.x >= 0) {
+        if (this.cells[point] && !this.cells[point].ship.enable && p.x < 10 && p.x >= 0) {
           this.cells[point].shield.enable = true;
           this.cells[point].shield.shipIds.push(ship.id);
           this.cells[point].busy = true;
