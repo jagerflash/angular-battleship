@@ -16,5 +16,8 @@ describe('ShipService', () => {
     const newShip: IShip = service.create(shipType);
 
     expect(newShip).toBeDefined();
+    expect(newShip.type).toEqual('L-Shape');
+    expect(newShip.decks).not.toBeUndefined();
+    expect(newShip.decks.length).not.toBeLessThan(1);
   });
 });

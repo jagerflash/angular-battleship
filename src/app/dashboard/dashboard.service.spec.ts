@@ -9,4 +9,12 @@ describe('DashboardService', () => {
     const service: DashboardService = TestBed.get(DashboardService);
     expect(service).toBeTruthy();
   });
+
+  it('could dashboard create', () => {
+    const service: DashboardService = TestBed.get(DashboardService);
+
+    service.resetShips();
+    expect(service.cellItems).not.toBeUndefined();
+    expect(service.cellItems.length).toEqual(100);
+  });
 });
