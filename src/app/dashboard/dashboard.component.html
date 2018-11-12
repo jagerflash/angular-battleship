@@ -2,7 +2,7 @@
   <h1>Batleship</h1>
   <div class="dashboard">
     <dashboard-cell
-      *ngFor="let cell of cells"
+      *ngFor="let cell of cells; trackBy: identify"
       [type]="cell.type"
       (mouseup)="onCellClick(cell)"
     ></dashboard-cell>

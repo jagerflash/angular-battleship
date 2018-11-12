@@ -3,23 +3,16 @@ $sky: rgba(34, 233, 226, 0.68);
 :host {
   box-sizing: border-box;
   display: inline-block;
-  border-radius: 5px;
   width: 10%;
-  cursor: pointer;
-}
-
-.cell {
   position: relative;
   border: 1px solid $sky;
+
+  cursor: pointer;
 
   &:before {
     content: '';
     display: block;
     padding-top: 100%;
-  }
-
-  &.show {
-    background-color: yellow;
   }
 
   &.hide {
@@ -49,7 +42,7 @@ $sky: rgba(34, 233, 226, 0.68);
     }
   }
 
-  &.damage{
+  &.damaged{
     background: $sky;
 
     &:after {

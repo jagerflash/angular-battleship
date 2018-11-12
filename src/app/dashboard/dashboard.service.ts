@@ -15,7 +15,7 @@ export class DashboardService {
   ) {
     this.cells = new Array(this.size * this.size).fill(null)
       .map(
-        () => new Cell()
+        (itm, ind) => new Cell(ind)
       );
 
     this.resetDashboard();
@@ -25,10 +25,10 @@ export class DashboardService {
     this.cells.forEach(cell => {
       cell.busy = false;
       cell.type = 'hide';
-      cell.shipId = undefined;
+      cell.ship.id = undefined;
       cell.shield.enable = false;
       cell.shield.shipIds = [];
-      cell.ship = false;
+      cell.ship.enable = false;
     });
   }
 
@@ -44,17 +44,17 @@ export class DashboardService {
   }
 
   shoot(cell: Cell) {
-    if (cell.shipId >= 0) {
+    if (cell.ship.enable) {
       this.cells.forEach(c => {
-        if (c.shipId === cell.shipId) {
-          c.type = 'damage';
+        if (c.ship.id === cell.ship.id) {
+          c.type = 'damaged';
         }
-        if (c.shield.enable && c.shield.shipIds.indexOf(cell.shipId) > -1) {
+        if (c.shield.enable && c.shield.shipIds.indexOf(cell.ship.id) > -1) {
           c.type = 'missed';
         }
       });
     this.ships
-      .find(ship => ship.id === cell.shipId)
+      .find(ship => ship.id === cell.ship.id)
       .destroy();
 
     } else if (cell.type === 'hide') {
@@ -77,9 +77,9 @@ export class DashboardService {
       );
 
       this.cells[cellNum].busy = true;
-      this.cells[cellNum].shipId = ship.id;
-      // this.cells[cellNum].type = 'show';
-      this.cells[cellNum].ship = true;
+      this.cells[cellNum].ship.enable = true;
+      this.cells[cellNum].ship.id = ship.id;
+
       this.cells[cellNum].shield.enable = false;
 
       for (let i = 0; i < 9; i++) {
@@ -104,7 +104,7 @@ export class DashboardService {
   }
 
   get cellItems() {
-    return [...this.cells];
+    return this.cells;
   }
 
   private hasFreePlace(deckPositions: Position[]) {

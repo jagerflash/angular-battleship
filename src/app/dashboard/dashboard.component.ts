@@ -32,4 +32,8 @@ export class DashboardComponent implements OnInit {
     this.dashboardService.resetShips();
     this.shipsLeft = this.dashboardService.aliveShipsLength;
   }
+
+  identify(ind, itm) {
+    return itm.id;
+  }
 }
