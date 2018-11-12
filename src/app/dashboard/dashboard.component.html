@@ -4,7 +4,7 @@
     <dashboard-cell
       *ngFor="let cell of cells"
       [type]="cell.type"
-      (click)="onCellClick(cell)"
+      (mouseup)="onCellClick(cell)"
     ></dashboard-cell>
   </div>
   <section class="controls" *ngIf="shipsLeft === 0">
