@@ -23,12 +23,7 @@ export class DashboardService {
 
   private resetDashboard() {
     this.cells.forEach(cell => {
-      cell.busy = false;
-      cell.type = 'hide';
-      cell.ship.id = undefined;
-      cell.shield.enable = false;
-      cell.shield.shipIds = [];
-      cell.ship.enable = false;
+      cell.reset();
     });
   }
 
@@ -44,21 +39,21 @@ export class DashboardService {
   }
 
   shoot(cell: Cell) {
-    if (cell.ship.enable) {
+    if (cell.isShip) {
       this.cells.forEach(c => {
-        if (c.ship.id === cell.ship.id) {
-          c.type = 'damaged';
+        if (c.shipId === cell.shipId) {
+          c.mark('damaged');
         }
-        if (c.shield.enable && c.shield.shipIds.indexOf(cell.ship.id) > -1) {
-          c.type = 'missed';
+        if (c.isShield && c.shieldShips.indexOf(cell.shipId) > -1) {
+          c.mark('missed');
         }
       });
     this.ships
-      .find(ship => ship.id === cell.ship.id)
+      .find(ship => ship.id === cell.shipId)
       .destroy();
 
-    } else if (cell.type === 'hide') {
-      cell.type = 'missed';
+    } else if (cell.hidden) {
+      cell.mark('missed');
     }
   }
 
@@ -76,11 +71,8 @@ export class DashboardService {
         (isFoundPosition as Position).y + deckPosition.y,
       );
 
-      this.cells[cellNum].busy = true;
-      this.cells[cellNum].ship.enable = true;
-      this.cells[cellNum].ship.id = ship.id;
-
-      this.cells[cellNum].shield.enable = false;
+      const shipCell = this.cells[cellNum];
+      shipCell.setShip(ship.id);
 
       for (let i = 0; i < 9; i++) {
         const p = {
@@ -88,10 +80,9 @@ export class DashboardService {
           y: coords.y + Math.floor(i / 3) - 1
         };
         const point = this.toLineArray(p);
-        if (this.cells[point] && !this.cells[point].ship.enable && p.x < 10 && p.x >= 0) {
-          this.cells[point].shield.enable = true;
-          this.cells[point].shield.shipIds.push(ship.id);
-          this.cells[point].busy = true;
+        const shieldCell = this.cells[point];
+        if (shieldCell && !shieldCell.isShip && p.x < 10 && p.x >= 0) {
+          shieldCell.setShield(ship.id);
         }
       }
     });
@@ -115,11 +106,10 @@ export class DashboardService {
 
     const hasPlace = deckPositions.every(deckPosition => {
       const cellNum = this.toLineArray(randomPlace) + this.toLineArray(deckPosition);
+      const cell = this.cells[cellNum];
+      const screenLimit = randomPlace.x + deckPosition.x < 10;
 
-      return this.cells[cellNum] &&
-        this.cells[cellNum].type === 'hide' &&
-        !this.cells[cellNum].busy &&
-        (randomPlace.x + deckPosition.x < 10);
+      return cell && cell.hidden && !cell.isBusy && screenLimit;
     });
 
     return hasPlace ? randomPlace : false;

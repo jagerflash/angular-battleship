@@ -8,30 +8,82 @@ export class Shield {
 
   constructor() {
     this.shipIds = [];
-    this.enable = false;
   }
 }
 
 class Ship {
   enable: boolean;
   id: number;
-
-  constructor() {
-    this.enable = false;
-  }
 }
 
 export class Cell {
-  type: CellState;
-  busy: boolean;
-  shield: Shield;
-  ship: Ship;
+  private type: CellState;
+  private busy: boolean;
+  private shield: Shield;
+  private ship: Ship;
 
   constructor(public id: number) {
     this.type = 'hide';
     this.busy = false;
     this.shield = new Shield();
     this.ship = new Ship();
+  }
+
+  get hidden () {
+    return this.type === 'hide';
+  }
+
+  get isShip () {
+    return this.ship.enable;
+  }
+
+  get isShield () {
+    return this.shield.enable;
+  }
+
+  get isBusy () {
+    return this.busy;
+  }
+
+  hide() {
+    this.type = 'hide';
+    this.busy = false;
+  }
+
+  setShip(id: number) {
+    this.ship.enable = true;
+    this.ship.id = id;
+    this.shield.enable = false;
+    this.busy = true;
+  }
+
+  setShield(shipId: number) {
+    this.shield.enable = true;
+    this.shield.shipIds.push(shipId);
+    this.busy = true;
+  }
+
+  get shieldShips() {
+    return [...this.shield.shipIds];
+  }
+
+  get shipId() {
+    if (this.ship.enable) {
+      return this.ship.id;
+    }
+    return null;
+  }
+
+  mark(type: CellState) {
+    this.type = type;
+  }
+
+  reset() {
+    this.ship.enable = false;
+    this.ship.id = undefined;
+    this.shield.enable = false;
+    this.shield.shipIds = [];
+    this.hide();
   }
 }
 
