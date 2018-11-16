@@ -3,7 +3,7 @@ $sky: rgba(34, 233, 226, 0.68);
 :host {
   box-sizing: border-box;
   display: inline-block;
-  width: 10%;
+  width: 50px;
   position: relative;
   border: 1px solid $sky;
 
@@ -15,6 +15,9 @@ $sky: rgba(34, 233, 226, 0.68);
     padding-top: 100%;
   }
 
+  &.show {
+    background-color: yellow;
+  }
   &.hide {
     &:hover {
       background-color: $sky;
@@ -42,7 +45,7 @@ $sky: rgba(34, 233, 226, 0.68);
     }
   }
 
-  &.damaged{
+  &.sunk{
     background: $sky;
 
     &:after {

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { ShipService, ShipType, IShip, Position } from './ship.service';
-import { Cell } from '../cell/cell.component';
+import { ShipType, IShip } from '../models/ship';
+import { Position } from './../models/matter';
+import { Cell, CellState } from '../models/cell';
 
 @Injectable({
   providedIn: 'root'
@@ -8,114 +9,190 @@ import { Cell } from '../cell/cell.component';
 export class DashboardService {
   private cells: Cell[];
   private ships: IShip[];
-  private size = 10;
+  private width;
+  private height;
 
-  constructor(
-    private shipService: ShipService
-  ) {
-    this.cells = new Array(this.size * this.size).fill(null)
+  constructor() {
+    const defaultSize = 10;
+    this.config(defaultSize, defaultSize);
+
+    this.clean();
+  }
+
+  clean() {
+    this.cells.forEach(cell => cell.reset());
+    this.ships = [];
+  }
+
+  config(width: number, height: number) {
+    const sizeMax = 50;
+    const sizeMin = 7;
+
+    width = Math.max(width, sizeMin);
+    width = Math.min(width, sizeMax);
+
+    this.width = width;
+    this.height = height;
+
+    this.cells = new Array(this.width * this.height).fill(null)
       .map(
         (itm, ind) => new Cell(ind)
       );
-
-    this.resetDashboard();
   }
 
-  private resetDashboard() {
-    this.cells.forEach(cell => {
-      cell.reset();
-    });
-  }
+  drawShip(startCellPos: Position, ship: IShip) {
+    if (this.getShipById(ship.id)) {
+      return;
+    }
 
-  resetShips() {
-    this.ships = [];
+    const shipDecks = ship.getDecks();
+    const isShipFit = this.testShipFit(startCellPos, ship);
 
-    this.resetDashboard();
+    if (isShipFit) {
+      shipDecks.forEach(deckPos => {
+        const pos = Position.sum(startCellPos, deckPos);
+        const cell = this.getCell(pos);
 
-    this.addShip('L-Shape');
-    this.addShip('I-Shape');
-    this.addShip('Two-Shape');
-    this.addShip('Two-Shape');
-  }
-
-  shoot(cell: Cell) {
-    if (cell.isShip) {
-      this.cells.forEach(c => {
-        if (c.shipId === cell.shipId) {
-          c.mark('damaged');
-        }
-        if (c.isShield && c.shieldShips.indexOf(cell.shipId) > -1) {
-          c.mark('missed');
+        if (cell) {
+          cell.setShip(ship.id);
         }
       });
-    this.ships
-      .find(ship => ship.id === cell.shipId)
-      .destroy();
-
-    } else if (cell.hidden) {
-      cell.mark('missed');
+      this.ships.push(ship);
+      this.setShipShield(startCellPos, ship.id);
     }
   }
 
-  addShip(type: ShipType) {
-    const ship = this.shipService.create(type);
+  drawShipRandom(ship: IShip) {
+    let loopMaxCount = 1000;
+    let shipPos: Position;
 
-    let isFoundPosition: Position | boolean = false;
-    do {
-      isFoundPosition = this.hasFreePlace(ship.decks);
-    } while (!isFoundPosition);
-    ship.decks.map(deckPosition => {
-      const cellNum = this.toLineArray(isFoundPosition as Position) + this.toLineArray(deckPosition);
-      const coords = new Position(
-        (isFoundPosition as Position).x + deckPosition.x,
-        (isFoundPosition as Position).y + deckPosition.y,
+    while (1) {
+      if (!loopMaxCount--) {
+        break;
+      }
+
+      const randomPos = new Position(
+        Math.round(Math.random() * (this.width - 1)),
+        Math.round(Math.random() * (this.height - 1))
       );
 
-      const shipCell = this.cells[cellNum];
-      shipCell.setShip(ship.id);
+      const isFoundPosition = this.testShipFit(randomPos, ship);
 
-      for (let i = 0; i < 9; i++) {
-        const p = {
-          x: coords.x + i % 3 - 1,
-          y: coords.y + Math.floor(i / 3) - 1
-        };
-        const point = this.toLineArray(p);
-        const shieldCell = this.cells[point];
-        if (shieldCell && !shieldCell.isShip && p.x < 10 && p.x >= 0) {
-          shieldCell.setShield(ship.id);
-        }
+      if (isFoundPosition) {
+        shipPos = randomPos;
+
+        break;
       }
-    });
+    }
 
-    this.ships.push(ship);
+    this.drawShip(shipPos, ship);
   }
 
-  get aliveShipsLength() {
-    return this.ships.length - this.ships.filter(ship => ship.isDestroied).length;
-  }
+  testShipFit(pos: Position, ship: IShip): boolean {
+    const shipDecks = ship.getDecks();
 
-  get cellItems() {
-    return this.cells;
-  }
-
-  private hasFreePlace(deckPositions: Position[]) {
-    const randomPlace = new Position(
-      Math.round(Math.random() * 9),
-      Math.round(Math.random() * 9)
-    );
-
-    const hasPlace = deckPositions.every(deckPosition => {
-      const cellNum = this.toLineArray(randomPlace) + this.toLineArray(deckPosition);
+    const isFit = shipDecks.every(deckPosition => {
+      const cellNum = this.toLineArray(pos) + this.toLineArray(deckPosition);
       const cell = this.cells[cellNum];
-      const screenLimit = randomPlace.x + deckPosition.x < 10;
+      const screenLimit = pos.x + deckPosition.x < this.width;
 
       return cell && cell.hidden && !cell.isBusy && screenLimit;
     });
 
-    return hasPlace ? randomPlace : false;
+    return isFit;
+  }
+
+  showShip(shipId: number) {
+    this.cells.forEach(cell => {
+      if (cell.isShip && cell.shipId === shipId) {
+        cell.setState(CellState.Sunk);
+        this.showShipSheild(shipId);
+      }
+    });
+  }
+
+  shoot(hitCell: Cell) {
+    if (hitCell.isShip) {
+      this.ships.find(ship => ship.id === hitCell.shipId)
+        .sink();
+
+      this.cells.forEach(cell => {
+        if (cell.shipId === hitCell.shipId) {
+          cell.setState(CellState.Sunk);
+        }
+        if (cell.isShield && cell.shieldShips.indexOf(hitCell.shipId) > -1) {
+          cell.setState(CellState.Missed);
+        }
+      });
+    } else if (hitCell.hidden) {
+      hitCell.setState(CellState.Missed);
+    }
+  }
+
+  getCells(): Cell[][] {
+    const twoDemCells: Cell[][] = [];
+    for (let y = 0; y < this.height; y++) {
+      twoDemCells[y] = [];
+      for (let x = 0; x < this.width; x++) {
+        const cell = this.cells[this.width * y + x];
+        twoDemCells[y].push(cell);
+      }
+    }
+
+    return twoDemCells;
+  }
+
+  getAliveShipsLength() {
+    return this.ships.length - this.ships.filter(ship => ship.sunk).length;
+  }
+
+  private getCell(pos: Position): Cell {
+    const cellsLength = this.width * this.height;
+    const cellIndex = this.toLineArray(pos);
+
+    if (cellIndex < cellsLength) {
+      return this.cells[cellIndex];
+    }
+
+    return null;
+  }
+
+  private setShipShield(startPos: Position, shipId: number) {
+    const ship = this.getShipById(shipId);
+    const decks = ship.getDecks();
+
+    decks.forEach(deckPos => {
+      const cellPos = Position.sum(startPos, deckPos);
+
+      for (let i = 0; i < 9; i++) {
+        const shieldPos = new Position(
+          cellPos.x + i % 3 - 1,
+          cellPos.y + Math.floor(i / 3) - 1
+        );
+        const withinLimits = shieldPos.x < this.width && shieldPos.x >= 0;
+        const cell = this.getCell(shieldPos);
+
+        if (cell && !cell.isShip && withinLimits) {
+          cell.setShield(ship.id);
+        }
+      }
+    });
+  }
+
+  private showShipSheild(shipId: number) {
+    this.cells.forEach(cell => {
+      const shipShield = cell.shieldShips.indexOf(shipId);
+      if (shipShield) {
+        cell.setState(CellState.Missed);
+      }
+    });
+  }
+
+  private getShipById(shipId: number): IShip {
+    return this.ships.find(ship => ship.id === shipId);
   }
 
   private toLineArray(position: Position): number {
-    return position.y * this.size + position.x;
+    return position.y * this.width + position.x;
   }
 }

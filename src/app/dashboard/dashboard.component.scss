@@ -1,12 +1,14 @@
 .container {
   margin: 0 auto;
-  width: 500px;
+  width: fit-content;
 
   .dashboard {
-    width: 100%;
-    position: relative;
     font-size: 0;
     background: linear-gradient(135deg, #1e5799 0%,#2989d8 42%,#2989d8 42%,#7db9e8 100%);
+
+    .row {
+      display: flex;
+    }
   }
 
   .controls {

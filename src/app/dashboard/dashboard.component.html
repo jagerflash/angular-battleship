@@ -1,11 +1,14 @@
 <div class="container">
   <h1>Batleship</h1>
   <div class="dashboard">
-    <dashboard-cell
-      *ngFor="let cell of cells; trackBy: identify"
-      [type]="cell.type"
-      (mouseup)="onCellClick(cell)"
-    ></dashboard-cell>
+    <div class="row" *ngFor="let columns of cells">
+      <div *ngFor="let cell of columns">
+        <dashboard-cell
+          [state]="cell.state"
+          (mouseup)="onCellClick(cell)"
+        ></dashboard-cell>
+      </div>
+    </div>
   </div>
   <section class="controls" *ngIf="shipsLeft === 0">
     <h2 class="congratulations">You win</h2>

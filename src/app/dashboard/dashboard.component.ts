@@ -1,6 +1,8 @@
+import { ShipType } from './models/ship';
+import { ShipService } from './services/ship.service';
 import { DashboardService } from './services/dashboard.service';
 import { Component, OnInit } from '@angular/core';
-import { Cell } from './cell/cell.component';
+import { Cell } from './models/cell';
 
 
 @Component({
@@ -10,27 +12,44 @@ import { Cell } from './cell/cell.component';
 })
 export class DashboardComponent implements OnInit {
   shipsLeft: number;
-  cells: Cell[];
+  cells: Cell[][];
 
-  constructor(private dashboardService: DashboardService) { }
+  constructor(
+    private dashboardService: DashboardService,
+    private shipService: ShipService
+  ) { }
 
   ngOnInit() {
-    this.dashboardService.resetShips();
-    this.cells = this.dashboardService.cellItems;
-    this.shipsLeft = this.dashboardService.aliveShipsLength;
+    this.setInitShips();
+
+    this.cells = this.dashboardService.getCells();
+    this.shipsLeft = this.dashboardService.getAliveShipsLength();
   }
 
   onCellClick(cell: Cell) {
     if (this.shipsLeft > 0) {
       this.dashboardService.shoot(cell);
-      this.cells = this.dashboardService.cellItems;
-      this.shipsLeft = this.dashboardService.aliveShipsLength;
+      this.cells = this.dashboardService.getCells();
+      this.shipsLeft = this.dashboardService.getAliveShipsLength();
     }
   }
 
   resetShips() {
-    this.dashboardService.resetShips();
-    this.shipsLeft = this.dashboardService.aliveShipsLength;
+    this.dashboardService.clean();
+    this.setInitShips();
+    this.shipsLeft = this.dashboardService.getAliveShipsLength();
+  }
+
+  setInitShips() {
+    const LShaped = this.shipService.create(ShipType.LShaped);
+    const IShaped = this.shipService.create(ShipType.IShaped);
+    const DotShaped1 = this.shipService.create(ShipType.DotShaped);
+    const DotShaped2 = this.shipService.create(ShipType.DotShaped);
+
+    this.dashboardService.drawShipRandom(LShaped);
+    this.dashboardService.drawShipRandom(IShaped);
+    this.dashboardService.drawShipRandom(DotShaped1);
+    this.dashboardService.drawShipRandom(DotShaped2);
   }
 
   identify(ind, itm) {

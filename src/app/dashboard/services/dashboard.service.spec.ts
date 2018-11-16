@@ -1,20 +1,89 @@
+import { CellState } from './../models/cell';
+import { Position } from './../models/matter';
 import { TestBed } from '@angular/core/testing';
 
 import { DashboardService } from './dashboard.service';
+import { ShipService } from './ship.service';
+import { ShipType } from '../models/ship';
 
 describe('DashboardService', () => {
-  beforeEach(() => TestBed.configureTestingModule({}));
+  let dashboardService: DashboardService;
+  let shipService: ShipService;
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    dashboardService = TestBed.get(DashboardService);
+    shipService = TestBed.get(ShipService);
+  });
 
   it('should be created', () => {
-    const service: DashboardService = TestBed.get(DashboardService);
-    expect(service).toBeTruthy();
+    expect(dashboardService).toBeTruthy();
   });
 
-  it('could dashboard create', () => {
-    const service: DashboardService = TestBed.get(DashboardService);
+  it('should dashboard be created', () => {
+    const defaultSize = 10 * 10;
+    const cells = dashboardService.getCells().reduce((acc, item) => {
+      return acc.concat(item);
+    });
 
-    service.resetShips();
-    expect(service.cellItems).not.toBeUndefined();
-    expect(service.cellItems.length).toEqual(100);
+    expect(cells.length).toEqual(defaultSize);
   });
+
+  it('should dashboard cleaned', () => {
+    const newShip = shipService.create(ShipType.IShaped);
+    const startPosition = new Position(0, 0);
+
+    dashboardService.drawShip(startPosition, newShip);
+    dashboardService.clean();
+    const cells = dashboardService.getCells().reduce((acc, item) => {
+      return acc.concat(item);
+    });
+    const defaultCell = cells.every(cell => !cell.isBusy);
+
+    expect(defaultCell).toBeTruthy();
+  });
+
+  it('dashboard could be configurable', () => {
+    const size = 20;
+    dashboardService.config(20, 20);
+    const cells = dashboardService.getCells().reduce((acc, item) => {
+      return acc.concat(item);
+    });
+
+    expect(cells.length).toEqual(20 * 20);
+  });
+
+  it('ship could be drawn', () => {
+    const newShip = shipService.create(ShipType.DotShaped);
+    const startPos = new Position(0, 0);
+    dashboardService.drawShip(startPos, newShip);
+
+    const cells = dashboardService.getCells();
+
+    expect(cells[startPos.x][startPos.y].isShip).toBeTruthy();
+  });
+
+  it('ship could be shot', () => {
+    const newShip = shipService.create(ShipType.DotShaped);
+    const startPos = new Position(0, 0);
+    const shipCell = dashboardService.getCells()[startPos.x][startPos.y];
+
+    dashboardService.drawShip(startPos, newShip);
+    dashboardService.shoot(shipCell);
+    const cells = dashboardService.getCells();
+    const sunkShips = dashboardService.getAliveShipsLength();
+
+    expect(sunkShips).toEqual(0);
+    expect(cells[startPos.x][startPos.y].state).toEqual(CellState.Sunk);
+  });
+
+  it('random ship could be drawn', () => {
+    const newShip = shipService.create(ShipType.DotShaped);
+    dashboardService.drawShipRandom(newShip);
+
+    const cells = dashboardService.getCells().reduce((acc, item) => acc.concat(item));
+    const shipIsPresent = cells.some(cell => cell.isShip);
+
+    expect(shipIsPresent).toBeTruthy();
+  });
+
 });
