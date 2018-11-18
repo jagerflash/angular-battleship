@@ -65,7 +65,7 @@ abstract class Ship implements IShip {
 }
 
 export class LShapeShip extends Ship {
-  constructor(id: number, angle: RotationAngle) {
+  constructor(id: number, angle?: RotationAngle) {
     super(id, angle);
 
     this.setType(ShipType.LShaped);
@@ -114,7 +114,7 @@ export class LShapeShip extends Ship {
 }
 
 export class IShapeShip extends Ship {
-  constructor(id: number, angle: RotationAngle) {
+  constructor(id: number, angle?: RotationAngle) {
     super(id, angle);
 
     this.setType(ShipType.IShaped);
@@ -148,7 +148,7 @@ export class IShapeShip extends Ship {
 }
 
 export class DotShapeShip extends Ship {
-  constructor(id: number, angle: RotationAngle) {
+  constructor(id: number, angle?: RotationAngle) {
     super(id, angle);
 
     this.setType(ShipType.DotShaped);

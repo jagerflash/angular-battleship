@@ -28,7 +28,7 @@ describe('DashboardService', () => {
     expect(cells.length).toEqual(defaultSize);
   });
 
-  it('should dashboard cleaned', () => {
+  it('should dashboard be cleaned', () => {
     const newShip = shipService.create(ShipType.IShaped);
     const startPosition = new Position(0, 0);
 
@@ -42,7 +42,7 @@ describe('DashboardService', () => {
     expect(defaultCell).toBeTruthy();
   });
 
-  it('dashboard could be configurable', () => {
+  it('could dashboard to be configurable', () => {
     const size = 20;
     dashboardService.config(20, 20);
     const cells = dashboardService.getCells().reduce((acc, item) => {
@@ -52,7 +52,7 @@ describe('DashboardService', () => {
     expect(cells.length).toEqual(20 * 20);
   });
 
-  it('ship could be drawn', () => {
+  it('could a ship to be drawn', () => {
     const newShip = shipService.create(ShipType.DotShaped);
     const startPos = new Position(0, 0);
     dashboardService.drawShip(startPos, newShip);
@@ -62,7 +62,7 @@ describe('DashboardService', () => {
     expect(cells[startPos.x][startPos.y].isShip).toBeTruthy();
   });
 
-  it('ship could be shot', () => {
+  it('could a ship to be shot', () => {
     const newShip = shipService.create(ShipType.DotShaped);
     const startPos = new Position(0, 0);
     const shipCell = dashboardService.getCells()[startPos.x][startPos.y];
@@ -76,7 +76,7 @@ describe('DashboardService', () => {
     expect(cells[startPos.x][startPos.y].state).toEqual(CellState.Sunk);
   });
 
-  it('random ship could be drawn', () => {
+  it('could be drawn random ship', () => {
     const newShip = shipService.create(ShipType.DotShaped);
     dashboardService.drawShipRandom(newShip);
 
