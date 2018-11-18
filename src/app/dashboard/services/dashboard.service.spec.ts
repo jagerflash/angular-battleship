@@ -52,7 +52,7 @@ describe('DashboardService', () => {
     expect(cells.length).toEqual(20 * 20);
   });
 
-  it('could a ship to be drawn', () => {
+  it('could ship to be drawn', () => {
     const newShip = shipService.create(ShipType.DotShaped);
     const startPos = new Position(0, 0);
     dashboardService.drawShip(startPos, newShip);
@@ -62,7 +62,7 @@ describe('DashboardService', () => {
     expect(cells[startPos.x][startPos.y].isShip).toBeTruthy();
   });
 
-  it('could a ship to be shot', () => {
+  it('could ship to be shot', () => {
     const newShip = shipService.create(ShipType.DotShaped);
     const startPos = new Position(0, 0);
     const shipCell = dashboardService.getCells()[startPos.x][startPos.y];

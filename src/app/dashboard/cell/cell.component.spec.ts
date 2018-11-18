@@ -2,7 +2,6 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CellComponent } from './cell.component';
 import { CellState } from '../models/cell';
-import { By } from 'protractor';
 
 describe('CellComponent', () => {
   let component: CellComponent;
@@ -29,23 +28,23 @@ describe('CellComponent', () => {
     component.state = CellState.Sunk;
     fixture.detectChanges();
 
-    const inputEl: DOMTokenList = fixture.elementRef.nativeElement.classList;
-    expect(inputEl.contains('sunk')).toBeTruthy();
+    const classList: DOMTokenList = fixture.elementRef.nativeElement.classList;
+    expect(classList.contains('sunk')).toBeTruthy();
   });
 
   it('should change missed style after input change', () => {
     component.state = CellState.Missed;
     fixture.detectChanges();
 
-    const inputEl: DOMTokenList = fixture.elementRef.nativeElement.classList;
-    expect(inputEl.contains('missed')).toBeTruthy();
+    const classList: DOMTokenList = fixture.elementRef.nativeElement.classList;
+    expect(classList.contains('missed')).toBeTruthy();
   });
 
   it('should change hide style after input change', () => {
     component.state = CellState.Hide;
     fixture.detectChanges();
 
-    const inputEl: DOMTokenList = fixture.elementRef.nativeElement.classList;
-    expect(inputEl.contains('hide')).toBeTruthy();
+    const classList: DOMTokenList = fixture.elementRef.nativeElement.classList;
+    expect(classList.contains('hide')).toBeTruthy();
   });
 });
