@@ -11,6 +11,7 @@ export interface IShip {
   id: number;
   sunk: boolean;
   type: ShipType;
+  rotations: RotationAngle[];
 
   getDecks(): Position[];
   rotate(angle: RotationAngle): void;
@@ -22,14 +23,10 @@ abstract class Ship implements IShip {
   private _sunk: boolean;
   private _decks: Position[];
   private _type: ShipType;
+  private _rotations: RotationAngle[];
 
-  constructor(id: number, angle?: RotationAngle) {
-    if (!angle) {
-      angle = Math.round(Math.random() * 3) * 90 as RotationAngle;
-    }
-
+  constructor(id: number) {
     this._id = id;
-    this.rotate(angle);
   }
 
   abstract rotate(angle: RotationAngle );
@@ -44,6 +41,10 @@ abstract class Ship implements IShip {
 
   get type() {
     return this._type;
+  }
+
+  get rotations() {
+    return this._rotations;
   }
 
   getDecks() {
@@ -62,13 +63,19 @@ abstract class Ship implements IShip {
     this._decks = decks;
   }
 
+  protected setRotations(rotations: RotationAngle[]) {
+    this._rotations = rotations;
+    this.rotate(rotations[0]);
+  }
+
 }
 
 export class LShapeShip extends Ship {
-  constructor(id: number, angle?: RotationAngle) {
-    super(id, angle);
+  constructor(id: number) {
+    super(id);
 
     this.setType(ShipType.LShaped);
+    this.setRotations([0, 90, 180, 270]);
   }
 
   rotate(angle: RotationAngle) {
@@ -114,10 +121,11 @@ export class LShapeShip extends Ship {
 }
 
 export class IShapeShip extends Ship {
-  constructor(id: number, angle?: RotationAngle) {
-    super(id, angle);
+  constructor(id: number) {
+    super(id);
 
     this.setType(ShipType.IShaped);
+    this.setRotations([0, 90]);
   }
 
   rotate(angle: RotationAngle) {
@@ -148,10 +156,11 @@ export class IShapeShip extends Ship {
 }
 
 export class DotShapeShip extends Ship {
-  constructor(id: number, angle?: RotationAngle) {
-    super(id, angle);
+  constructor(id: number) {
+    super(id);
 
     this.setType(ShipType.DotShaped);
+    this.setRotations([0]);
 
     const decks = [ new Position(0, 0) ];
     this.setDecks(decks);

@@ -54,6 +54,10 @@ export class Cell {
     this.busy = false;
   }
 
+  show() {
+    this.state = CellState.Show;
+  }
+
   setShip(id: number) {
     this.ship.enable = true;
     this.ship.id = id;

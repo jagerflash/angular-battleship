@@ -7,3 +7,10 @@ export class Position {
     return new Position(A.x + B.x, A.y + B.y);
   }
 }
+
+export class ShipFitCombination {
+  constructor(
+    public angle: RotationAngle,
+    public position: Position
+  ) {}
+}

@@ -46,10 +46,10 @@ export class DashboardComponent implements OnInit {
     const DotShaped1 = this.shipService.create(ShipType.DotShaped);
     const DotShaped2 = this.shipService.create(ShipType.DotShaped);
 
-    this.dashboardService.drawShipRandom(LShaped);
-    this.dashboardService.drawShipRandom(IShaped);
-    this.dashboardService.drawShipRandom(DotShaped1);
-    this.dashboardService.drawShipRandom(DotShaped2);
+    this.dashboardService.drawShipRandomly(LShaped);
+    this.dashboardService.drawShipRandomly(IShaped);
+    this.dashboardService.drawShipRandomly(DotShaped1);
+    this.dashboardService.drawShipRandomly(DotShaped2);
   }
 
   identify(ind, itm) {

@@ -14,11 +14,24 @@ export class ShipService {
 
   create(type: ShipType, angle?: RotationAngle): IShip {
     this.id++;
+    let newShip: IShip;
 
     switch (type) {
-      case ShipType.LShaped: return new LShapeShip(this.id, angle);
-      case ShipType.IShaped: return new IShapeShip(this.id, angle);
-      case ShipType.DotShaped: return new DotShapeShip(this.id, angle);
+      case ShipType.LShaped:
+        newShip = new LShapeShip(this.id);
+        break;
+      case ShipType.IShaped:
+        newShip = new IShapeShip(this.id);
+        break;
+      case ShipType.DotShaped:
+        newShip = new DotShapeShip(this.id);
+        break;
     }
+
+    if (angle !== undefined) {
+      newShip.rotate(angle);
+    }
+
+    return newShip;
   }
 }

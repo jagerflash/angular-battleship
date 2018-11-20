@@ -78,7 +78,7 @@ describe('DashboardService', () => {
 
   it('could be drawn random ship', () => {
     const newShip = shipService.create(ShipType.DotShaped);
-    dashboardService.drawShipRandom(newShip);
+    dashboardService.drawShipRandomly(newShip);
 
     const cells = dashboardService.getCells().reduce((acc, item) => acc.concat(item));
     const shipIsPresent = cells.some(cell => cell.isShip);

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { ShipType, IShip } from '../models/ship';
-import { Position } from './../models/matter';
+import { IShip } from '../models/ship';
+import { Position, ShipFitCombination, RotationAngle } from './../models/matter';
 import { Cell, CellState } from '../models/cell';
 
 @Injectable({
@@ -62,37 +62,42 @@ export class DashboardService {
     }
   }
 
-  drawShipRandom(ship: IShip) {
-    let loopMaxCount = 1000;
-    let shipPos: Position;
+  drawShipRandomly(ship: IShip) {
+    const dashboardSize = this.width * this.height;
+    const сombinations: ShipFitCombination[] = [];
 
-    while (1) {
-      if (!loopMaxCount--) {
-        break;
-      }
+    for (let i = 0; i < dashboardSize; i++) {
+        const pos = this.toPosFromLine(i, this.width, this.height);
 
-      const randomPos = new Position(
-        Math.round(Math.random() * (this.width - 1)),
-        Math.round(Math.random() * (this.height - 1))
-      );
+        for (let a = 0; a <= 270; a += 90) {
+          const angle = a as RotationAngle;
 
-      const isFoundPosition = this.testShipFit(randomPos, ship);
+          ship.rotate(angle);
+          const isShipFit = this.testShipFit(pos, ship);
 
-      if (isFoundPosition) {
-        shipPos = randomPos;
-
-        break;
-      }
+          if (isShipFit) {
+            const combination = new ShipFitCombination(angle, pos);
+            сombinations.push(combination);
+          }
+        }
     }
 
-    this.drawShip(shipPos, ship);
+    const randomCombination = сombinations[
+      Math.round(Math.random() * сombinations.length)
+    ];
+
+    if (randomCombination) {
+      ship.rotate(randomCombination.angle);
+
+      this.drawShip(randomCombination.position, ship);
+    }
   }
 
   testShipFit(pos: Position, ship: IShip): boolean {
     const shipDecks = ship.getDecks();
 
     const isFit = shipDecks.every(deckPosition => {
-      const cellNum = this.toLineArray(pos) + this.toLineArray(deckPosition);
+      const cellNum = this.toLineArrayIndex(pos) + this.toLineArrayIndex(deckPosition);
       const cell = this.cells[cellNum];
       const screenLimit = pos.x + deckPosition.x < this.width;
 
@@ -148,9 +153,9 @@ export class DashboardService {
 
   private getCell(pos: Position): Cell {
     const cellsLength = this.width * this.height;
-    const cellIndex = this.toLineArray(pos);
+    const cellIndex = this.toLineArrayIndex(pos);
 
-    if (cellIndex < cellsLength) {
+    if (cellIndex >= 0 && cellIndex < cellsLength) {
       return this.cells[cellIndex];
     }
 
@@ -163,11 +168,13 @@ export class DashboardService {
 
     decks.forEach(deckPos => {
       const cellPos = Position.sum(startPos, deckPos);
+      const pointsAroundCell = 9;
 
-      for (let i = 0; i < 9; i++) {
+      for (let i = 0; i < pointsAroundCell; i++) {
+        const pos = this.toPosFromLine(i, 3, 3);
         const shieldPos = new Position(
-          cellPos.x + i % 3 - 1,
-          cellPos.y + Math.floor(i / 3) - 1
+          cellPos.x + pos.x - 1,
+          cellPos.y + pos.y - 1
         );
         const withinLimits = shieldPos.x < this.width && shieldPos.x >= 0;
         const cell = this.getCell(shieldPos);
@@ -192,7 +199,14 @@ export class DashboardService {
     return this.ships.find(ship => ship.id === shipId);
   }
 
-  private toLineArray(position: Position): number {
+  private toLineArrayIndex(position: Position): number {
     return position.y * this.width + position.x;
+  }
+
+  private toPosFromLine(index: number, width: number, height: number): Position {
+    const x = index % width;
+    const y = Math.floor(index / height);
+
+    return new Position(x, y);
   }
 }
